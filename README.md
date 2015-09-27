@@ -1,0 +1,2 @@
+# intellij-purescript
+Purescript plugin
