@@ -1,0 +1,23 @@
+{
+parserClass="com.demo.parser.PurescriptParser"
+
+extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+psiClassPrefix="Purescript"
+psiImplClassSuffix="Impl"
+psiPackage="com.demo.psi"
+psiImplPackage="com.demo.psi.impl"
+
+elementTypeHolderClass="com.demo.psi.PurescriptTypes"
+elementTypeClass="com.demo.psi.PurescriptElementType"
+tokenTypeClass="com.demo.psi.PurescriptTokenType"
+}
+
+purescriptFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY
+
+
+
