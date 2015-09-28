@@ -5,11 +5,15 @@ Purescript plugin
 
 This is developed under IntellijIDEA 14
 
-### Custom Language Support Tutorial
+#### Custom Language Support Tutorial
 
 http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support_tutorial.html
 
-### General plugin development
+Initial set-up is covered here:
+
+http://www.jetbrains.org/intellij/sdk/docs/tutorials/custom_language_support/prerequisites.html
+
+#### General plugin development
 
 https://www.jetbrains.com/idea/help/plugin-development-guidelines.html
 
@@ -24,7 +28,7 @@ or clone from github:
 
      git clone --depth 1 https://github.com/JetBrains/intellij-community.git
 
-### SDKs
+#### SDKs
 * JDK 1.8
 * Intellij Platform Plugin SDK
 
@@ -34,6 +38,11 @@ or clone from github:
 
      https://www.jetbrains.com/idea/help/configuring-intellij-platform-plugin-sdk.html
      
+
+#### Plugins
+
+In addition to Plugin DevKit plugin, you need Grammar-Kit and PsiViewer plugins.
+
 
 
      
