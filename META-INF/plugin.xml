@@ -28,6 +28,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="com.demo.PurescriptFileTypeFactory"/>
+    <lang.parserDefinition language="Purescript" implementationClass="com.demo.PurescriptParserDefinition"/>
   </extensions>
 
   <application-components>
