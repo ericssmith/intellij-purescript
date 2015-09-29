@@ -3,7 +3,6 @@ package com.demo;
 import com.intellij.lang.ParserDefinition;
 import  com.intellij.lang.ASTNode ;
 import  com.intellij.lang.Language ;
-import  com.intellij.lang.ParserDefinition ;
 import  com.intellij.lang.PsiParser ;
 import  com.intellij.lexer.Lexer ;
 import  com.intellij.openapi.project.Project ;
