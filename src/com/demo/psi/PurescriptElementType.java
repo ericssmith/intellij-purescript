@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class PurescriptElementType extends IElementType {
-    public PurescriptElementType(@NotNull @NonNls String debuName) {
-        super(debuName, PurescriptLanguage.INSTANCE);
+    public PurescriptElementType(@NotNull @NonNls String debugName) {
+        super(debugName, PurescriptLanguage.INSTANCE);
     }
 }
