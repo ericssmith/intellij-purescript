@@ -29,6 +29,8 @@
     <!-- Add your extensions here -->
     <fileTypeFactory implementation="com.demo.PurescriptFileTypeFactory"/>
     <lang.parserDefinition language="Purescript" implementationClass="com.demo.PurescriptParserDefinition"/>
+    <lang.syntaxHighlighterFactory key="Purescript" implementationClass="com.demo.PurescriptSyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="com.demo.PurescriptColorSettingsPage"/>
   </extensions>
 
   <application-components>
