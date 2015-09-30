@@ -15,7 +15,7 @@ tokenTypeClass="com.demo.psi.PurescriptTokenType"
 
 program ::= item_*
 
-private item_ ::= (property|COMMENT|NEWLINE)
+private item_ ::= (property|COMMENT|CRLF)
 
 property ::= (KEY? SEPARATOR VALUE?) | KEY
 

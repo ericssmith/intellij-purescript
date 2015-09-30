@@ -15,13 +15,13 @@ import  com.intellij.psi.TokenType ;
 %eof{  return;
 %eof}
 
-NEWLINE= \n|\r|\r\n
+CRLF= \n|\r|\r\n
 WHITE_SPACE=[\ \t\f]
-FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{NEWLINE} | "\\".
-VALUE_CHARACTER=[^\n\r\f\\] | "\\"{NEWLINE} | "\\".
+FIRST_VALUE_CHARACTER=[^ \n\r\f\\] | "\\"{CRLF} | "\\".
+VALUE_CHARACTER=[^\n\r\f\\] | "\\"{CRLF} | "\\".
 END_OF_LINE_COMMENT=("#"|"!")[^\r\n]*
 SEPARATOR=[:=]
-KEY_CHARACTER=[^:=\ \n\r\t\f\\] | "\\"{NEWLINE} | "\\".
+KEY_CHARACTER=[^:=\ \n\r\t\f\\] | "\\"{CRLF} | "\\".
 
 %state WAITING_VALUE
 
@@ -33,13 +33,13 @@ KEY_CHARACTER=[^:=\ \n\r\t\f\\] | "\\"{NEWLINE} | "\\".
 
 <YYINITIAL> {SEPARATOR}                                     { yybegin(WAITING_VALUE); return PurescriptTypes.SEPARATOR; }
 
-< WAITING_VALUE >  { NEWLINE }                                      {  yybegin ( YYINITIAL );  return  PurescriptTypes . NEWLINE ;  }
+< WAITING_VALUE >  { CRLF }                                      {  yybegin ( YYINITIAL );  return  PurescriptTypes . CRLF ;  }
 
 <WAITING_VALUE> {WHITE_SPACE}+                              { yybegin(WAITING_VALUE); return TokenType.WHITE_SPACE; }
 
 <WAITING_VALUE> {FIRST_VALUE_CHARACTER}{VALUE_CHARACTER}*    { yybegin(YYINITIAL); return PurescriptTypes.VALUE; }
 
-{ NEWLINE }                                                      {  yybegin ( YYINITIAL );  return  PurescriptTypes . NEWLINE ;  }
+{ CRLF }                                                      {  yybegin ( YYINITIAL );  return  PurescriptTypes . CRLF ;  }
 
 {WHITE_SPACE}+                                              { yybegin(YYINITIAL); return TokenType.WHITE_SPACE; }
 
