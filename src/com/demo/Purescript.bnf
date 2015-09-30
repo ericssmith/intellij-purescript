@@ -14,11 +14,18 @@ tokenTypeClass="com.demo.psi.PurescriptTokenType"
 
 psiImplUtilClass="com.demo.psi.impl.PurescriptPsiImplUtil"
 
+
 }
 
-program ::= item_*
+program ::= onl module_body onl item_*
 
-private item_ ::= (property|COMMENT|CRLF)
+module_body ::= module_declaration+ onl item_*
+
+module_declaration ::= MODULE onl
+
+private item_ ::= (property|COMMENT|NEWLINE)
+
+private onl ::= NEWLINE*
 
 
 property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.demo.psi.impl.PurescriptNamedElementImpl"
