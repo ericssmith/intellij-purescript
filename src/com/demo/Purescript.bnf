@@ -13,9 +13,9 @@ elementTypeClass="com.demo.psi.PurescriptElementType"
 tokenTypeClass="com.demo.psi.PurescriptTokenType"
 }
 
-purescriptFile ::= item_*
+program ::= item_*
 
-private item_ ::= (property|COMMENT|CRLF)
+private item_ ::= (property|COMMENT|NEWLINE)
 
 property ::= (KEY? SEPARATOR VALUE?) | KEY
 
