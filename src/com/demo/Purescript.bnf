@@ -11,13 +11,16 @@ psiImplPackage="com.demo.psi.impl"
 elementTypeHolderClass="com.demo.psi.PurescriptTypes"
 elementTypeClass="com.demo.psi.PurescriptElementType"
 tokenTypeClass="com.demo.psi.PurescriptTokenType"
+
+psiImplUtilClass="com.demo.psi.impl.PurescriptPsiImplUtil"
+
 }
 
 program ::= item_*
 
 private item_ ::= (property|COMMENT|CRLF)
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
 
 
 
