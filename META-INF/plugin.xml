@@ -37,7 +37,7 @@
     <completion.contributor language="Purescript" implementationClass="com.demo.PurescriptCompletionContributor"/>
     <lang.commenter language="Purescript" implementationClass="com.demo.PurescriptCommenter"/>
     <psi.referenceContributor implementation="com.demo.PurescriptReferenceContributor"/>
-
+    <lang.findUsagesProvider language="Purescript" implementationClass="com.demo.PurescriptFindUsagesProvider"/>
   </extensions>
 
   <application-components>
