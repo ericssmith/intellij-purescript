@@ -1,9 +1,11 @@
 package com.demo.psi.impl;
 
 
+import com.demo.psi.PurescriptElementFactory;
 import com.intellij.lang.ASTNode;
 import com.demo.psi.PurescriptProperty;
 import com.demo.psi.PurescriptTypes;
+import com.intellij.psi.PsiElement;
 
 public class PurescriptPsiImplUtil {
     public static String getKey(PurescriptProperty element) {
@@ -23,4 +25,30 @@ public class PurescriptPsiImplUtil {
             return null;
         }
     }
+
+
+    public static String getName(PurescriptProperty element) {
+        return getKey(element);
+    }
+
+    public static PsiElement setName(PurescriptProperty element, String newName) {
+        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.KEY);
+        if (keyNode != null) {
+
+            PurescriptProperty property = PurescriptElementFactory.createProperty(element.getProject(), newName);
+            ASTNode newKeyNode = property.getFirstChild().getNode();
+            element.getNode().replaceChild(keyNode, newKeyNode);
+        }
+        return element;
+    }
+
+    public static PsiElement getNameIdentifier(PurescriptProperty element) {
+        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.KEY);
+        if (keyNode != null) {
+            return keyNode.getPsi();
+        } else {
+            return null;
+        }
+    }
+    
 }

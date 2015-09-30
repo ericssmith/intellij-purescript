@@ -20,7 +20,8 @@ program ::= item_*
 
 private item_ ::= (property|COMMENT|CRLF)
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY {methods=[getKey getValue]}
 
+property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.demo.psi.impl.PurescriptNamedElementImpl"
+  implements="com.demo.psi.PurescriptNamedElement" methods=[getKey getValue getName setName getNameIdentifier]}
 
 
