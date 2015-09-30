@@ -34,6 +34,7 @@
     <annotator language="JAVA" implementationClass="com.demo.PurescriptAnnotator"/>
     <!-- FIXME Change language to Purescript after testing -->
     <codeInsight.lineMarkerProvider language="JAVA" implementationClass="com.demo.PurescriptLineMarkerProvider"/>
+    <completion.contributor language="Purescript" implementationClass="com.demo.PurescriptCompletionContributor"/>
     <lang.commenter language="Purescript" implementationClass="com.demo.PurescriptCommenter"/>
 
   </extensions>
