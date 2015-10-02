@@ -14,21 +14,25 @@ tokenTypeClass="com.demo.psi.PurescriptTokenType"
 
 psiImplUtilClass="com.demo.psi.impl.PurescriptPsiImplUtil"
 
+elementTypePrefix="PS_"
 
 }
 
-program ::= onl module_body onl item_*
+program ::= onl module_body onl
 
-module_body ::= module_declaration+ onl item_*
+module_body ::= module_declaration+ onl
 
-module_declaration ::= MODULE onl
+module_declaration ::= MODULE mod_id WHERE onl
 
-private item_ ::= (property|COMMENT|NEWLINE)
+mod_id ::= (CON_ID DOT)+ CON_ID | CON_ID
 
 private onl ::= NEWLINE*
 
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.demo.psi.impl.PurescriptNamedElementImpl"
-  implements="com.demo.psi.PurescriptNamedElement" methods=[getKey getValue getName setName getNameIdentifier]}
+
+private item_ ::= (KEY|SEPARATOR|VALUE|COMMENT|QUOTE)
+
+//property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.demo.psi.impl.PurescriptNamedElementImpl"
+//  implements="com.demo.psi.PurescriptNamedElement" methods=[getKey getValue getName setName getNameIdentifier]}
 
 

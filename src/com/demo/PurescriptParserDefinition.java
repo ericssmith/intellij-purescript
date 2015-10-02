@@ -20,7 +20,10 @@ import  org.jetbrains.annotations.NotNull ;
 
 public class PurescriptParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(PurescriptTypes.COMMENT);
+    public static final TokenSet COMMENTS = TokenSet.create(PurescriptTypes.PS_COMMENT);
+
+    public static final TokenSet RESERVED_IDS = TokenSet.create(PurescriptTypes.PS_MODULE, PurescriptTypes.PS_WHERE, PurescriptTypes.PS_KEY);
+    public static final TokenSet STRINGS = TokenSet.create(PurescriptTypes.PS_VALUE);
 
     public static final IFileElementType FILE = new IFileElementType(Language.<PurescriptLanguage>findInstance(PurescriptLanguage.class));
 

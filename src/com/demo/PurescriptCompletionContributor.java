@@ -10,7 +10,7 @@ import  org.jetbrains.annotations.NotNull ;
 public class PurescriptCompletionContributor extends CompletionContributor {
     public PurescriptCompletionContributor() {
         extend(CompletionType.BASIC,
-                PlatformPatterns.psiElement(PurescriptTypes.VALUE).withLanguage(PurescriptLanguage.INSTANCE),
+                PlatformPatterns.psiElement(PurescriptTypes.PS_VALUE).withLanguage(PurescriptLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                ProcessingContext context,

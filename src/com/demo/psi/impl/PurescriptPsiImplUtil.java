@@ -9,7 +9,7 @@ import com.intellij.psi.PsiElement;
 
 public class PurescriptPsiImplUtil {
     public static String getKey(PurescriptProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.KEY);
+        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.PS_KEY);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
@@ -18,7 +18,7 @@ public class PurescriptPsiImplUtil {
     }
 
     public static String getValue(PurescriptProperty element) {
-        ASTNode valueNode = element.getNode().findChildByType(PurescriptTypes.VALUE);
+        ASTNode valueNode = element.getNode().findChildByType(PurescriptTypes.PS_VALUE);
         if (valueNode != null) {
             return valueNode.getText();
         } else {
@@ -32,7 +32,7 @@ public class PurescriptPsiImplUtil {
     }
 
     public static PsiElement setName(PurescriptProperty element, String newName) {
-        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.KEY);
+        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.PS_KEY);
         if (keyNode != null) {
 
             PurescriptProperty property = PurescriptElementFactory.createProperty(element.getProject(), newName);
@@ -43,7 +43,7 @@ public class PurescriptPsiImplUtil {
     }
 
     public static PsiElement getNameIdentifier(PurescriptProperty element) {
-        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.KEY);
+        ASTNode keyNode = element.getNode().findChildByType(PurescriptTypes.PS_KEY);
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {
