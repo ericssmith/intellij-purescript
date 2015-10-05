@@ -18,15 +18,42 @@ elementTypePrefix="PS_"
 
 }
 
-program ::= onl module_body onl
+program ::= onl module_body onl body
 
 module_body ::= module_declaration+ onl
 
 module_declaration ::= MODULE mod_id WHERE onl
 
-mod_id ::= (CON_ID DOT)+ CON_ID | CON_ID
+private body ::= import_declarations top_declarations
+private import_declarations ::= (import_declaration onl)*
+private top_declarations ::= (top_declaration onl)*
+
+import_declaration ::= IMPORT mod_id
+
+mod_id ::= (CONID_ID DOT)+ CONID_ID | CONID_ID
+
+top_declaration ::= expression
+
+expression ::= first_line_expression | (line_expression)* last_line_expression | last_line_expression
+first_line_expression ::= general_id+ snl
+line_expression ::= NEWLINE* general_id+ snl
+last_line_expression ::= general_id+ osnl
 
 private onl ::= NEWLINE*
+private osnl ::= (NEWLINE)*
+snl ::= (NEWLINE)+
+
+con_id ::= CONID_ID
+
+var_id ::= VARID_ID
+qvar ::= var_id
+
+literal ::= STRING_LITERAL
+
+private general_id ::= (qvar | DO | COLON_COLON | RIGHT_ARROW | LEFT_ARROW | QUOTE | literal | symbol_reserved_op)
+
+private symbol_reserved_op ::= VERTICAL_BAR | EQUAL
+
 
 
 

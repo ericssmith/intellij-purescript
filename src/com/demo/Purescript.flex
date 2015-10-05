@@ -30,9 +30,25 @@ QUOTE="'"
 HASH="#"
 DOT="."
 
+EQUAL="="
+VERTICAL_BAR="|"
+
+
+COLON_COLON="::"
+LEFT_ARROW="<-"
+RIGHT_ARROW="->"
+
+
+VAR_ID = {SMALL} ({SMALL} | {LARGE} | {DIGIT} | {QUOTE})* {HASH}*
 CON_ID = {LARGE} ({SMALL} | {LARGE} | {DIGIT} | {QUOTE})* {HASH}*
 
-
+GAP =  \\({WHITE_SPACE}|{NEWLINE})*\\
+//cntrl               = {LARGE} | [@\[\\\]\^_]
+//charesc             = [abfnrtv\\\"\'&]
+//ascii               = ("^"{cntrl})|(NUL)|(SOH)|(STX)|(ETX)|(EOT)|(ENQ)|(ACK)|(BEL)|(BS)|(HT)|(LF)|(VT)|(FF)|(CR)|(SO)|(SI)|(DLE)|(DC1)|(DC2)|(DC3)|(DC4)|(NAK)|(SYN)|(ETB)|(CAN)|(EM)|(SUB)|(ESC)|(FS)|(GS)|(RS)|(US)|(SP)|(DEL)
+//escape              = \\({charesc}|{ascii}|({digit}+)|(o({octit}+))|(x({hexit}+)))
+//STRING_LITERAL = \"([^\"\\\n]|{escape}|{gap})*(\"|\n)
+STRING_LITERAL = \"([^\"\\\n]|{GAP})*(\"|\n)
 
 %state WAITING_VALUE
 
@@ -43,10 +59,29 @@ CON_ID = {LARGE} ({SMALL} | {LARGE} | {DIGIT} | {QUOTE})* {HASH}*
 
 "module"   { return PurescriptTypes.PS_MODULE; }
 "where"   { return PurescriptTypes.PS_WHERE; }
+"import" {return PurescriptTypes.PS_IMPORT;}
+"do" {return PurescriptTypes.PS_DO;}
 
-{CON_ID} { return PurescriptTypes.PS_CON_ID;}
+
+
+{VAR_ID} { return PurescriptTypes.PS_VARID_ID;}
+{CON_ID} { return PurescriptTypes.PS_CONID_ID;}
+
+
+{STRING_LITERAL} {return PurescriptTypes.PS_STRING_LITERAL;}
+
+
 {DOT} {return PurescriptTypes.PS_DOT;}
 {QUOTE} {return PurescriptTypes.PS_QUOTE;}
+
+{COLON_COLON} {return PurescriptTypes.PS_COLON_COLON;}
+{LEFT_ARROW} {return PurescriptTypes.PS_LEFT_ARROW;}
+{RIGHT_ARROW} {return PurescriptTypes.PS_RIGHT_ARROW;}
+
+{EQUAL} {return PurescriptTypes.PS_EQUAL;}
+{VERTICAL_BAR} {return PurescriptTypes.PS_VERTICAL_BAR;}
+
+
 
 
 // Keep old entries so tutorial references continue to work

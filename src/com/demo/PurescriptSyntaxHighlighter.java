@@ -6,10 +6,7 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import com.demo.psi.PurescriptTypes;
-import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -36,6 +33,7 @@ public class PurescriptSyntaxHighlighter extends SyntaxHighlighterBase {
 
     static {
         fillMap(ATTRIBUTES, PurescriptParserDefinition.RESERVED_IDS, DefaultLanguageHighlighterColors.KEYWORD);
+        fillMap(ATTRIBUTES, PurescriptParserDefinition.RESERVED_OPERATORS, DefaultLanguageHighlighterColors.OPERATION_SIGN);
         fillMap(ATTRIBUTES, PurescriptParserDefinition.STRINGS, DefaultLanguageHighlighterColors.STRING);
         fillMap(ATTRIBUTES, PurescriptParserDefinition.COMMENTS, DefaultLanguageHighlighterColors.LINE_COMMENT);
     }

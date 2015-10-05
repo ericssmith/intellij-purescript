@@ -1,10 +1,10 @@
 package com.demo;
 
+import com.demo.psi.PurescriptTypes;
 import  com.intellij.codeInsight.completion.* ;
 import  com.intellij.codeInsight.lookup.LookupElementBuilder ;
 import  com.intellij.patterns.PlatformPatterns ;
 import  com.intellij.util.ProcessingContext ;
-import  com.demo.psi.PurescriptTypes ;
 import  org.jetbrains.annotations.NotNull ;
 
 public class PurescriptCompletionContributor extends CompletionContributor {
