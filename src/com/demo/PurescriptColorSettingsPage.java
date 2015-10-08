@@ -25,7 +25,6 @@ public class PurescriptColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("Keyword", PurescriptSyntaxHighlighter.KEYWORD),
             new AttributesDescriptor("Bad Character", PurescriptSyntaxHighlighter.BAD_CHARACTER),
             new AttributesDescriptor("Operator", PurescriptSyntaxHighlighter.OPERATOR),
-            new AttributesDescriptor("Literal", PurescriptSyntaxHighlighter.LITERAL)
 
     };
 

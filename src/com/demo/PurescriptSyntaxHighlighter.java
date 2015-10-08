@@ -1,14 +1,12 @@
 package com.demo;
 
 
-import com.demo.psi.PurescriptElements;
 import com.demo.psi.PurescriptTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +47,7 @@ public class PurescriptSyntaxHighlighter extends SyntaxHighlighterBase {
         fillMap(ATTRIBUTES, PurescriptParserDefinition.STRINGS, DefaultLanguageHighlighterColors.STRING);
         fillMap(ATTRIBUTES, PurescriptParserDefinition.COMMENTS, DefaultLanguageHighlighterColors.LINE_COMMENT);
 
-        ATTRIBUTES.put(PurescriptTypes.PS_LITERAL, LITERAL);
+//        ATTRIBUTES.put(PurescriptTypes.PS_LITERAL, LITERAL);
 
     }
 
