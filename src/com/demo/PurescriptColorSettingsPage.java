@@ -15,9 +15,18 @@ import java.util.Map;
 
 public class PurescriptColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Key", PurescriptSyntaxHighlighter.KEY),
-            new AttributesDescriptor("Separator", PurescriptSyntaxHighlighter.SEPARATOR),
-            new AttributesDescriptor("Value", PurescriptSyntaxHighlighter.VALUE),
+//            new AttributesDescriptor("Key", PurescriptSyntaxHighlighter.KEY),
+//            new AttributesDescriptor("Separator", PurescriptSyntaxHighlighter.SEPARATOR),
+//            new AttributesDescriptor("Value", PurescriptSyntaxHighlighter.VALUE),
+
+
+            new AttributesDescriptor("String", PurescriptSyntaxHighlighter.STRING),
+            new AttributesDescriptor("Comment", PurescriptSyntaxHighlighter.COMMENT),
+            new AttributesDescriptor("Keyword", PurescriptSyntaxHighlighter.KEYWORD),
+            new AttributesDescriptor("Bad Character", PurescriptSyntaxHighlighter.BAD_CHARACTER),
+            new AttributesDescriptor("Operator", PurescriptSyntaxHighlighter.OPERATOR),
+            new AttributesDescriptor("Literal", PurescriptSyntaxHighlighter.LITERAL)
+
     };
 
     @Nullable
@@ -35,18 +44,14 @@ public class PurescriptColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        return "# You are reading the \".properties\" entry.\n" +
-                "! The exclamation mark can also mark text as comments.\n" +
-                "website = http://en.wikipedia.org/\n" +
-                "language = English\n" +
-                "# The backslash below tells the application to continue reading\n" +
-                "# the value onto the next line.\n" +
-                "message = Welcome to \\\n" +
-                "          Wikipedia!\n" +
-                "# Add spaces to the key\n" +
-                "key\\ with\\ spaces = This is the value that could be looked up with the key \"key with spaces\".\n" +
-                "# Unicode\n" +
-                "tab : \\u0009";
+        return "module Main where\n" +
+                "\n" +
+                "import Control.Monad.Eff.Console\n" +
+                "import Control.Monad.Eff\n" +
+                "\n" +
+                "main :: forall e. Signal (Eff e Unit) -> Eff e Unit\n" +
+                "main = do\n" +
+                "    log \"Hello Sailer\"";
     }
 
     @Nullable

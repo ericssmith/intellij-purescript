@@ -31,6 +31,10 @@ public class PurescriptParserDefinition implements ParserDefinition {
 
     public static final TokenSet STRINGS = TokenSet.create(PurescriptTypes.PS_STRING_LITERAL, PurescriptTypes.PS_VALUE);
 
+
+
+
+
     public static final IFileElementType FILE = new IFileElementType(Language.<PurescriptLanguage>findInstance(PurescriptLanguage.class));
 
     @NotNull

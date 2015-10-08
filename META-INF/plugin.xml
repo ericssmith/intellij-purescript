@@ -31,7 +31,7 @@
     <lang.syntaxHighlighterFactory key="Purescript" implementationClass="com.demo.PurescriptSyntaxHighlighterFactory"/>
     <colorSettingsPage implementation="com.demo.PurescriptColorSettingsPage"/>
     <!-- FIXME Change language to Purescript after testing -->
-    <annotator language="JAVA" implementationClass="com.demo.PurescriptAnnotator"/>
+    <annotator language="Purescript" implementationClass="com.demo.PurescriptAnnotator"/>
     <!-- FIXME Change language to Purescript after testing or just REMOVE altogether -->
     <codeInsight.lineMarkerProvider language="JAVA" implementationClass="com.demo.PurescriptLineMarkerProvider"/>
     <completion.contributor language="Purescript" implementationClass="com.demo.PurescriptCompletionContributor"/>
