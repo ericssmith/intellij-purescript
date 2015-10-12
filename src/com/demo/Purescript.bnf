@@ -16,50 +16,134 @@ psiImplUtilClass="com.demo.psi.impl.PurescriptPsiImplUtil"
 
 elementTypePrefix="PS_"
 
+tokens = [
+line_comment = "regexp:--.*[\r\n]"       // ("--"[^\r\n]*)
+MODULE = "regexp:module[ ]+"
+//LARGE = "regexp:[A-Z]"
+//SMALL = "regexp:[a-z_]"
+CONID = "regexp:[A-Z]{1}[A-Za-z_0-9]*" // Starts with cap
+DOT = "."
+WHERE = "regexp:where[ ]*[\r\n]+"
+WHITE_SPACE = "regexp:[ ]+"      // This works without explicitly being in bnf(?!)
+LEFT_PAREN = "("
+RIGHT_PAREN = ")"
+COMMA = ","
+VARID = "regexp:[a-z]{1}[A-Za-z_0-9]*" // Starts with lowercase
+VARSYM = "regexp:[=><]+"
+NEWLINE ="regexp:\n|\r|\r\n"
+
+
+]
+
 }
 
-program ::= onl module_body onl body
+module_declaration ::= MODULE modid onl (onl exports)? onl WHERE? onl
 
-module_body ::= module_declaration+ onl
 
-module_declaration ::= MODULE mod_id WHERE onl
+exports ::= LEFT_PAREN onl export (onl COMMA? onl export onl)* onl COMMA? onl RIGHT_PAREN
+export ::= export1 | export2 | export3
+export1 ::= qvar   // FIXME qvar_op not in Report
+//FIXME Constructor without parens not allowed in Purescript?
+export2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
+export3 ::= MODULE modid
 
-private body ::= import_declarations top_declarations
-private import_declarations ::= (import_declaration onl)*
-private top_declarations ::= (top_declaration onl)*
+cname ::= var | con
 
-import_declaration ::= IMPORT mod_id
 
-mod_id ::= (CONID_ID DOT)+ CONID_ID | CONID_ID
 
-top_declaration ::= expression
+// 3.2 Variables, Constructors, Operators, and Literals
+var ::= VARID | LEFT_PAREN VARSYM RIGHT_PAREN    // Variables
+// FIXME? - this includes non-qualified in Report and intellij-haskell
+qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN
 
-expression ::= first_line_expression | (line_expression)* last_line_expression | last_line_expression
-first_line_expression ::= general_id+ snl
-line_expression ::= NEWLINE* general_id+ snl
-last_line_expression ::= general_id+ osnl
+con ::= CONID    // Constructors  TODO - add consym
+qcon ::= qconid      // TODO Handle qualification
 
+
+//qvar_op ::= VARSYM  // TODO - not in Report
+
+// 2.4 Identifiers and Operators
+// VARID is token
+// CONID is token
+// Reserved words are tokens
+modid ::= (CONID DOT)+ CONID | CONID  // FIXME make it match Report, ie synonym
+
+// FIXME optional qualification here confuses its use, above. That is,
+// hit several ways
+qvarid ::= (modid DOT)* VARID
+qconid ::= (modid DOT)* CONID   // TODO intellij-haskell is different than Report
+
+qvarsym ::= (modid DOT)* VARSYM
+
+
+// Not in Report
+dot_dot_parens ::= LEFT_PAREN DOT DOT RIGHT_PAREN
 private onl ::= NEWLINE*
-private osnl ::= (NEWLINE)*
-snl ::= (NEWLINE)+
 
-con_id ::= CONID_ID
 
-var_id ::= VARID_ID
-qvar ::= var_id
 
-literal ::= STRING_LITERAL
 
-private general_id ::= (qvar | DO | COLON_COLON | RIGHT_ARROW | LEFT_ARROW | QUOTE | literal | symbol_reserved_op)
-
-private symbol_reserved_op ::= VERTICAL_BAR | EQUAL
-
+//module_declaration ::= MODULE mod_id WHERE onl body
+//
+//private body ::= import_declarations top_declarations
+//private import_declarations ::= import_declaration onl*
+//private top_declarations ::= top_declaration onl*
+//
+//import_declaration ::= IMPORT mod_id  // TODO add parentheses for limiting
+//
+//mod_id ::= (CONID_ID DOT)+ CONID_ID | CONID_ID
+//
+//top_declaration ::= type_decl | data_decl | newtype_decl | class_decl | instance_decl | decl
+//
+//type_decl ::= TYPE  // TODO type synonyms work differently in purescript
+//
+//data_decl ::= DATA
+//
+//newtype_decl ::= NEWTYPE
+//
+//class_decl ::= CLASS
+//
+//instance_decl ::= INSTANCE
+//
+//decl ::= gendecl | funlhs funrhs
+//
+//gendecl ::= typesiglhs typesigrhs      // TODO add fixity decl
+//
+//typesiglhs ::= var_id
+//
+//typesigrhs ::= COLON_COLON // add fun type
+//
+//funlhs ::= var_id
+//
+//funrhs ::= EQUAL expression
+//
+//expression ::= first_line_expression (line_expression)+ last_line_expression | last_line_expression
+//first_line_expression ::= general_id+ snl
+//line_expression ::=  WHITE_SPACE* general_id+ snl
+//last_line_expression ::= WHITE_SPACE* general_id+ snl //TODO is space necessary on one-line fun def?
+//
+//
+//private onl ::= NEWLINE*
+//private osnl ::= NEWLINE*
+//snl ::= NEWLINE+
+//
+//con_id ::= CONID_ID
+//
+//var_id ::= VARID_ID
+//qvar ::= var_id
+//
+//literal ::= STRING_LITERAL
+//
+//private general_id ::= qvar | DO | COLON_COLON | RIGHT_ARROW | LEFT_ARROW | QUOTE | literal | symbol_reserved_op
+//
+//private symbol_reserved_op ::= VERTICAL_BAR | EQUAL
+//
 
 
 
 private item_ ::= (KEY|SEPARATOR|VALUE|COMMENT|QUOTE)
 
-//property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.demo.psi.impl.PurescriptNamedElementImpl"
-//  implements="com.demo.psi.PurescriptNamedElement" methods=[getKey getValue getName setName getNameIdentifier]}
+property ::= (KEY? SEPARATOR VALUE?) | KEY {mixin="com.demo.psi.impl.PurescriptNamedElementImpl"
+  implements="com.demo.psi.PurescriptNamedElement" methods=[getKey getValue getName setName getNameIdentifier]}
 
 
