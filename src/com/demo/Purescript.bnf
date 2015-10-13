@@ -18,6 +18,7 @@ elementTypePrefix="PS_"
 
 tokens = [
 line_comment = "regexp:--.*[\r\n]"       // ("--"[^\r\n]*)
+EQUAL = "="          // Order matters. Needs to be before VARSYM since dupe
 MODULE = "regexp:module[ ]+"
 //LARGE = "regexp:[A-Z]"
 //SMALL = "regexp:[a-z_]"
@@ -27,25 +28,73 @@ WHERE = "regexp:where[ ]*[\r\n]+"
 WHITE_SPACE = "regexp:[ ]+"      // This works without explicitly being in bnf(?!)
 LEFT_PAREN = "("
 RIGHT_PAREN = ")"
+LEFT_BRACE = "{"
+RIGHT_BRACE = "}"
 COMMA = ","
 VARID = "regexp:[a-z]{1}[A-Za-z_0-9]*" // Starts with lowercase
 VARSYM = "regexp:[=><]+"
 NEWLINE ="regexp:\n|\r|\r\n"
+IMPORTID = "regexp:import[ ]+"  // TODO - Change all tokens with suffix?
+TYPEID = "regexp:type[ ]+"
+COLON_COLON = "regexp:::[ ]+"
+DATAID = "regexp:data[ ]+"
+VERTICAL_BAR = "regexp:\|[ ]+"  // FIXME - Space req'd?
+
 
 
 ]
 
 }
 
-module_declaration ::= MODULE modid onl (onl exports)? onl WHERE? onl
+module_declaration ::= MODULE modid onl (onl exports)? onl WHERE onl body
+
+private body ::= impdecls topdecls
 
 
 exports ::= LEFT_PAREN onl export (onl COMMA? onl export onl)* onl COMMA? onl RIGHT_PAREN
 export ::= export1 | export2 | export3
-export1 ::= qvar   // FIXME qvar_op not in Report
+export1 ::= qvar
 //FIXME Constructor without parens not allowed in Purescript?
 export2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
 export3 ::= MODULE modid
+
+
+impdecls ::= (impdecl onl)*
+impdecl ::= IMPORTID modid impspec*
+// FIXME - Not sure line breaks supported in Purescript
+impspec ::= LEFT_PAREN onl import (onl COMMA? onl import onl)* onl COMMA? onl RIGHT_PAREN
+import ::= import1   // | import2
+import1 ::= var
+import2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
+
+topdecls ::= (topdecl onl)*
+topdecl ::= typedecl | datadecl
+
+typedecl ::= TYPEID simpletype EQUAL (type | rec_constr)
+
+datadecl ::= DATAID simpletype onl EQUAL onl constrs
+
+simpletype ::= qcon  // TODO what else is legal on lefthand side?
+
+// 4.1.2
+type ::= btype+   // FIXME I had to add the plus, not in Report
+btype ::= (btype)* atype    // FIXME not sure why need parens
+atype ::= gtycon
+
+gtycon ::= qtycon   // TODO???
+
+// FIXME does this allow programs that won't actually compile?
+// ie field labels mixed with normal constructors?
+constrs ::= constr onl (VERTICAL_BAR constr onl)*
+constr ::= con rec_constr | type
+
+rec_constr ::= onl LEFT_BRACE onl fielddecl (onl COMMA onl fielddecl onl)* onl RIGHT_BRACE
+
+fielddecl ::= vars COLON_COLON type
+
+vars ::= var (COMMA var)*      // FIXME - can you really have comma-separated vars?
+
+
 
 cname ::= var | con
 
@@ -73,6 +122,7 @@ modid ::= (CONID DOT)+ CONID | CONID  // FIXME make it match Report, ie synonym
 qvarid ::= (modid DOT)* VARID
 qconid ::= (modid DOT)* CONID   // TODO intellij-haskell is different than Report
 
+qtycon ::= (modid DOT)* CONID
 qvarsym ::= (modid DOT)* VARSYM
 
 
