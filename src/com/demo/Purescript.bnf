@@ -19,12 +19,15 @@ elementTypePrefix="PS_"
 tokens = [
 line_comment = "regexp:--.*[\r\n]"       // ("--"[^\r\n]*)
 EQUAL = "="          // Order matters. Needs to be before VARSYM since dupe
-MODULE = "regexp:module[ ]+"
+DOUBLE_LEFT_ARROW = "<="   // Order matters.
+DOUBLE_RIGHT_ARROW = "=>"
+RIGHT_ARROW = "->"
+MODULEID = "regexp:module[ ]+"
 //LARGE = "regexp:[A-Z]"
 //SMALL = "regexp:[a-z_]"
 CONID = "regexp:[A-Z]{1}[A-Za-z_0-9]*" // Starts with cap
 DOT = "."
-WHERE = "regexp:where[ ]*[\r\n]+"
+WHEREID = "regexp:where[ ]*[\r\n]+"
 WHITE_SPACE = "regexp:[ ]+"      // This works without explicitly being in bnf(?!)
 LEFT_PAREN = "("
 RIGHT_PAREN = ")"
@@ -32,21 +35,32 @@ LEFT_BRACE = "{"
 RIGHT_BRACE = "}"
 COMMA = ","
 VARID = "regexp:[a-z]{1}[A-Za-z_0-9]*" // Starts with lowercase
-VARSYM = "regexp:[=><]+"
+
 NEWLINE ="regexp:\n|\r|\r\n"
 IMPORTID = "regexp:import[ ]+"  // TODO - Change all tokens with suffix?
 TYPEID = "regexp:type[ ]+"
 COLON_COLON = "regexp:::[ ]+"
 DATAID = "regexp:data[ ]+"
 VERTICAL_BAR = "regexp:\|[ ]+"  // FIXME - Space req'd?
+NEWTYPEID = "regexp:newtype[ ]+"
+CLASSID = "regexp:class[ ]+"
+FORALLID = "regexp:forall[ ]+"
+INSTANCEID = "regexp:instance[ ]+"
+INTEGER = "regexp:[0-9]+"
+DECIMAL = "regexp:[0-9]+\.[0-9]+"
+LETID = "regexp:let[ ]+"
+INID = "regexp:in[ ]+"
+IFID = "regexp:if[ ]+"
+THENID = "regexp:then[ ]+"
+ELSEID = "regexp:else[ ]+"
 
-
+VARSYM = "regexp:[=><+@\|\\~!#$%\-\*\?\^]+" // List from plugin
 
 ]
 
 }
 
-module_declaration ::= MODULE modid onl (onl exports)? onl WHERE onl body
+module_declaration ::= MODULEID modid onl (onl exports)? onl WHEREID onl body
 
 private body ::= impdecls topdecls
 
@@ -56,7 +70,7 @@ export ::= export1 | export2 | export3
 export1 ::= qvar
 //FIXME Constructor without parens not allowed in Purescript?
 export2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
-export3 ::= MODULE modid
+export3 ::= MODULEID modid
 
 
 impdecls ::= (impdecl onl)*
@@ -68,37 +82,97 @@ import1 ::= var
 import2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
 
 topdecls ::= (topdecl onl)*
-topdecl ::= typedecl | datadecl
+topdecl ::= typedecl | datadecl | newtypedecl | classdecl | instancedecl | decls
 
 typedecl ::= TYPEID simpletype EQUAL (type | rec_constr)
 
 datadecl ::= DATAID simpletype onl EQUAL onl constrs
 
-simpletype ::= qcon  // TODO what else is legal on lefthand side?
+newtypedecl ::= NEWTYPEID simpletype EQUAL newtypeconstr
+
+decls ::= decl*
+decl ::= gendecl | funlhs EQUAL funrhs
+gendecl ::= typesigdecl
+
+
+
+// 4.3.1
+// FIXME plugin has qualified con & var; Report does not
+// FIXME Purescript has multiple params, in context as well
+// Purescript has Nullary Type Class
+classdecl ::= CLASSID (scontext DOUBLE_LEFT_ARROW)* con (var)*  (WHEREID cdecls)*
+// TODO - add optional newlines
+scontext ::= simpleclass | LEFT_PAREN simpleclass (COMMA simpleclass)* RIGHT_PAREN
+simpleclass ::= qcon qvar+   //FIXME qcon+ in plugin
+cdecls ::= (cdecl onl)+
+cdecl ::= typesigdecl   // FIXME gendecl in Report, includes fixity, cdecl includes function def
+context ::= LEFT_PAREN clazz (COMMA clazz)* RIGHT_PAREN
+clazz ::= qcon vars+   // like plugin
+
+// FIXME - for syntax coloring, will need to split off the name
+typesigdecl ::= var COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
+
+quantifier ::= FORALLID vars+ DOT
+
+simpletype ::= qcon? type | qcon (var)*
+
+// 4.3.2
+// Unlike Haskell, Purescript instances are "named to aid the readability of the
+// generated Javascript"
+// FIXME - this is not at all like plugin or Report
+instancedecl ::= INSTANCEID typesigdecl (WHEREID idecls)?
+
+idecls ::= idecl+
+idecl ::= funlhs EQUAL onl funrhs
+
+// 4.4.3
+funlhs ::= funid apat? (apat)*
+funid ::= var   // Pulled out for syntax coloring
+apat ::= var  // TODO - flesh out patterns
+
+
+funrhs ::= exp
+exp ::= infixexp
+infixexp ::= lexp qop infixexp | lexp  // Order matters!!
+lexp ::= onl LETID decls onl INID exp | onl IFID exp onl THENID exp onl ELSEID exp | fexp
+
+
+// FIXME - this is modelled on btype below to fix infinite recursion
+fexp ::= (fexp)* bexp      //  Report has [fexp] aexp, which recurses endlessly
+bexp ::= aexp+
+aexp ::= qvar | qcon | literal | LEFT_PAREN exp RIGHT_PAREN
+
+literal ::= INTEGER | DECIMAL // FIXME replace
+
+
 
 // 4.1.2
-type ::= btype+   // FIXME I had to add the plus, not in Report
-btype ::= (btype)* atype    // FIXME not sure why need parens
-atype ::= gtycon
+type ::= btype (RIGHT_ARROW type)?
+btype ::=  atype+                       // Match plugin, not Report
 
-gtycon ::= qtycon   // TODO???
+atype ::= gtycon | var | LEFT_PAREN type RIGHT_PAREN
+
+// FIXME - qcon (plugin) vs qtycon (Report). Needed for type annotations
+gtycon ::= qcon
 
 // FIXME does this allow programs that won't actually compile?
 // ie field labels mixed with normal constructors?
 constrs ::= constr onl (VERTICAL_BAR constr onl)*
 constr ::= con rec_constr | type
 
-rec_constr ::= onl LEFT_BRACE onl fielddecl (onl COMMA onl fielddecl onl)* onl RIGHT_BRACE
-
-fielddecl ::= vars COLON_COLON type
-
-vars ::= var (COMMA var)*      // FIXME - can you really have comma-separated vars?
+// FIXME get type and newtype to match in pattern
+newtypeconstr ::= con type  | con rec_constr
 
 
+// See constr1
+rec_constr ::= onl LEFT_BRACE onl (onl fielddecl (onl COMMA onl fielddecl onl)*)? onl RIGHT_BRACE
+
+fielddecl ::= vars COLON_COLON type //(type | atype)
+
+//vars ::= var (COMMA var)*      // FIXME - can you really have comma-separated vars?
+vars ::= var
 
 cname ::= var | con
-
-
 
 // 3.2 Variables, Constructors, Operators, and Literals
 var ::= VARID | LEFT_PAREN VARSYM RIGHT_PAREN    // Variables
@@ -106,8 +180,9 @@ var ::= VARID | LEFT_PAREN VARSYM RIGHT_PAREN    // Variables
 qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN
 
 con ::= CONID    // Constructors  TODO - add consym
-qcon ::= qconid      // TODO Handle qualification
+qcon ::= qconid | CONID
 
+qop ::= qvarsym
 
 //qvar_op ::= VARSYM  // TODO - not in Report
 
@@ -115,12 +190,13 @@ qcon ::= qconid      // TODO Handle qualification
 // VARID is token
 // CONID is token
 // Reserved words are tokens
-modid ::= (CONID DOT)+ CONID | CONID  // FIXME make it match Report, ie synonym
+//modid ::= (CONID DOT)+ CONID | CONID  // FIXME make it match Report, ie synonym
+modid ::= (CONID DOT)* CONID | CONID  // FIXME make it match Report, ie synonym
 
 // FIXME optional qualification here confuses its use, above. That is,
 // hit several ways
 qvarid ::= (modid DOT)* VARID
-qconid ::= (modid DOT)* CONID   // TODO intellij-haskell is different than Report
+qconid ::= (CONID DOT)+ CONID  // TODO intellij-haskell is different than Report
 
 qtycon ::= (modid DOT)* CONID
 qvarsym ::= (modid DOT)* VARSYM
