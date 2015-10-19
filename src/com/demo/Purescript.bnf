@@ -64,7 +64,6 @@ module_declaration ::= MODULEID modid onl (onl exports)? onl WHEREID onl body
 
 private body ::= impdecls topdecls
 
-
 exports ::= LEFT_PAREN onl export (onl COMMA? onl export onl)* onl COMMA? onl RIGHT_PAREN
 export ::= export1 | export2 | export3
 export1 ::= qvar
@@ -81,6 +80,7 @@ import ::= import1   // | import2
 import1 ::= var
 import2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
 
+
 topdecls ::= (topdecl onl)*
 topdecl ::= typedecl | datadecl | newtypedecl | classdecl | instancedecl | decls
 
@@ -90,7 +90,7 @@ datadecl ::= DATAID simpletype onl EQUAL onl constrs
 
 newtypedecl ::= NEWTYPEID simpletype EQUAL newtypeconstr
 
-decls ::= decl*
+decls ::= decl+
 decl ::= gendecl | funlhs EQUAL funrhs
 gendecl ::= typesigdecl
 
