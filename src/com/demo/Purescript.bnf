@@ -23,6 +23,7 @@ DOUBLE_LEFT_ARROW = "<="   // Order matters.
 DOUBLE_RIGHT_ARROW = "=>"
 RIGHT_ARROW = "->"
 MODULEID = "regexp:module[ ]+"
+
 //LARGE = "regexp:[A-Z]"
 //SMALL = "regexp:[a-z_]"
 CONID = "regexp:[A-Z]{1}[A-Za-z_0-9]*" // Starts with cap
@@ -33,6 +34,8 @@ LEFT_PAREN = "("
 RIGHT_PAREN = ")"
 LEFT_BRACE = "{"
 RIGHT_BRACE = "}"
+LEFT_BRACKET = "["
+RIGHT_BRACKET = "]"
 COMMA = ","
 VARID = "regexp:[a-z]{1}[A-Za-z_0-9]*" // Starts with lowercase
 
@@ -53,6 +56,9 @@ INID = "regexp:in[ ]+"
 IFID = "regexp:if[ ]+"
 THENID = "regexp:then[ ]+"
 ELSEID = "regexp:else[ ]+"
+CASEID = "regexp:case[ ]+"
+OFID = "regexp:of[ ]+"
+UNDERSCORE = "_"  // This is reserved in the Report
 
 VARSYM = "regexp:[=><+@\|\\~!#$%\-\*\?\^]+" // List from plugin
 
@@ -128,19 +134,31 @@ idecl ::= funlhs EQUAL onl funrhs
 // 4.4.3
 funlhs ::= funid apat? (apat)*
 funid ::= var   // Pulled out for syntax coloring
-apat ::= var  // TODO - flesh out patterns
+apat ::= var | gcon | literal  | UNDERSCORE // TODO - flesh out patterns
+
+gcon ::= LEFT_BRACKET RIGHT_BRACKET
 
 
 funrhs ::= exp
 exp ::= infixexp
 infixexp ::= lexp qop infixexp | lexp  // Order matters!!
-lexp ::= onl LETID decls onl INID exp | onl IFID exp onl THENID exp onl ELSEID exp | fexp
+lexp ::= letexp | ifexp | caseexp | fexp
+letexp ::= onl LETID decls onl INID exp
+ifexp ::= onl IFID exp onl THENID exp onl ELSEID exp
+caseexp ::= onl CASEID exp onl OFID onl alts
+
+alts ::= alt+
+alt ::= pat RIGHT_ARROW exp (WHERE decls)* onl
+
+pat ::= lpat
+
+lpat ::= apat
 
 
 // FIXME - this is modelled on btype below to fix infinite recursion
 fexp ::= (fexp)* bexp      //  Report has [fexp] aexp, which recurses endlessly
 bexp ::= aexp+
-aexp ::= qvar | qcon | literal | LEFT_PAREN exp RIGHT_PAREN
+aexp ::= qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN
 
 literal ::= INTEGER | DECIMAL // FIXME replace
 
