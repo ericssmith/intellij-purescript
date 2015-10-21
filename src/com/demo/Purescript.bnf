@@ -22,6 +22,7 @@ EQUAL = "="          // Order matters. Needs to be before VARSYM since dupe
 DOUBLE_LEFT_ARROW = "<="   // Order matters.
 DOUBLE_RIGHT_ARROW = "=>"
 RIGHT_ARROW = "->"
+LEFT_ARROW = "<-"
 MODULEID = "regexp:module[ ]+"
 
 //LARGE = "regexp:[A-Z]"
@@ -36,6 +37,7 @@ LEFT_BRACE = "{"
 RIGHT_BRACE = "}"
 LEFT_BRACKET = "["
 RIGHT_BRACKET = "]"
+
 COMMA = ","
 VARID = "regexp:[a-z]{1}[A-Za-z_0-9]*" // Starts with lowercase
 
@@ -51,13 +53,16 @@ FORALLID = "regexp:forall[ ]+"
 INSTANCEID = "regexp:instance[ ]+"
 INTEGER = "regexp:[0-9]+"
 DECIMAL = "regexp:[0-9]+\.[0-9]+"
+STRING = "regexp:\".*?\""
 LETID = "regexp:let[ ]+"
 INID = "regexp:in[ ]+"
 IFID = "regexp:if[ ]+"
 THENID = "regexp:then[ ]+"
 ELSEID = "regexp:else[ ]+"
 CASEID = "regexp:case[ ]+"
-OFID = "regexp:of[ ]+"
+OFID = "regexp:[ ]+of"   // May or may not be space at the EOL; find with space before
+DOID = "regexp:[ ]+do"  // May or may not be space at EOL; find with space before
+
 UNDERSCORE = "_"  // This is reserved in the Report
 
 VARSYM = "regexp:[=><+@\|\\~!#$%\-\*\?\^]+" // List from plugin
@@ -118,7 +123,7 @@ clazz ::= qcon vars+   // like plugin
 // FIXME - for syntax coloring, will need to split off the name
 typesigdecl ::= var COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
 
-quantifier ::= FORALLID vars+ DOT
+quantifier ::= FORALLID vars+ DOT onl
 
 simpletype ::= qcon? type | qcon (var)*
 
@@ -134,41 +139,49 @@ idecl ::= funlhs EQUAL onl funrhs
 // 4.4.3
 funlhs ::= funid apat? (apat)*
 funid ::= var   // Pulled out for syntax coloring
-apat ::= var | gcon | literal  | UNDERSCORE // TODO - flesh out patterns
-
-gcon ::= LEFT_BRACKET RIGHT_BRACKET
 
 
 funrhs ::= exp
-exp ::= infixexp
+exp ::= infixexp COLON_COLON type | infixexp
 infixexp ::= lexp qop infixexp | lexp  // Order matters!!
-lexp ::= letexp | ifexp | caseexp | fexp
+lexp ::= letexp | ifexp | caseexp | doexp | fexp
 letexp ::= onl LETID decls onl INID exp
 ifexp ::= onl IFID exp onl THENID exp onl ELSEID exp
 caseexp ::= onl CASEID exp onl OFID onl alts
+doexp ::= DOID onl stmts
+
 
 alts ::= alt+
 alt ::= pat RIGHT_ARROW exp (WHERE decls)* onl
 
-pat ::= lpat
+stmts ::= stmt+
+stmt ::= onl pat LEFT_ARROW exp onl | exp// Report has semi-colons req'd
 
-lpat ::= apat
+pat ::= lpat
+lpat ::= gcon apat | apat  // Order matters!
+apat ::= var | gcon | qcon | literal  | UNDERSCORE
+
+gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
+
 
 
 // FIXME - this is modelled on btype below to fix infinite recursion
 fexp ::= (fexp)* bexp      //  Report has [fexp] aexp, which recurses endlessly
 bexp ::= aexp+
-aexp ::= qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN
+aexp ::= qvar DOT qvar | qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET
 
-literal ::= INTEGER | DECIMAL // FIXME replace
+
+literal ::= INTEGER | DECIMAL | STRING
 
 
 
 // 4.1.2
-type ::= btype (RIGHT_ARROW type)?
+type ::= btype (RIGHT_ARROW onl type)?
 btype ::=  atype+                       // Match plugin, not Report
 
-atype ::= gtycon | var | LEFT_PAREN type RIGHT_PAREN
+atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN
+// FIXME - LEFT_PAREN etc is Purescript only
+tyvar ::= var | LEFT_PAREN var COLON_COLON type (VERTICAL_BAR var)* RIGHT_PAREN
 
 // FIXME - qcon (plugin) vs qtycon (Report). Needed for type annotations
 gtycon ::= qcon
