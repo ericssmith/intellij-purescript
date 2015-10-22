@@ -19,7 +19,7 @@ elementTypePrefix="PS_"
 tokens = [
 line_comment = "regexp:--.*[\r\n]"       // ("--"[^\r\n]*)
 EQUAL = "="          // Order matters. Needs to be before VARSYM since dupe
-DOUBLE_LEFT_ARROW = "<="   // Order matters.
+DOUBLE_LEFT_ARROW = "<="   // Order matters. // FIXME Disambiguate from less-than-or-equal-to
 DOUBLE_RIGHT_ARROW = "=>"
 RIGHT_ARROW = "->"
 LEFT_ARROW = "<-"
@@ -38,8 +38,9 @@ RIGHT_BRACE = "}"
 LEFT_BRACKET = "["
 RIGHT_BRACKET = "]"
 
+
 COMMA = ","
-VARID = "regexp:[a-z]{1}[A-Za-z_0-9]*" // Starts with lowercase
+VARID = "regexp:[a-z]{1}[A-Za-z_0-9']*" // Starts with lowercase
 
 NEWLINE ="regexp:\n|\r|\r\n"
 IMPORTID = "regexp:import[ ]+"  // TODO - Change all tokens with suffix?
@@ -62,32 +63,40 @@ ELSEID = "regexp:else[ ]+"
 CASEID = "regexp:case[ ]+"
 OFID = "regexp:[ ]+of"   // May or may not be space at the EOL; find with space before
 DOID = "regexp:[ ]+do"  // May or may not be space at EOL; find with space before
+INFIX = "regexp:infix[ ]+"
+INFIXL = "regexp:infixl[ ]+"
+INFIXR = "regexp:infixr[ ]+"
+MINUS = "-"
+ATSYM = "@"
 
 UNDERSCORE = "_"  // This is reserved in the Report
+BACKSLASH = "regexp:\\"
+VARSYM = "regexp:[=><+@\|~!#$%\-\*\?\^\.:]+" // List from plugin
 
-VARSYM = "regexp:[=><+@\|\\~!#$%\-\*\?\^]+" // List from plugin
+
 
 ]
 
 }
 
-module_declaration ::= MODULEID modid onl (onl exports)? onl WHEREID onl body
+module_declaration ::= onl MODULEID modid onl (onl exports)? onl WHEREID onl body
 
 private body ::= impdecls topdecls
 
 exports ::= LEFT_PAREN onl export (onl COMMA? onl export onl)* onl COMMA? onl RIGHT_PAREN
-export ::= export1 | export2 | export3
+export ::= export1 | export2 | export3 | export4
 export1 ::= qvar
 //FIXME Constructor without parens not allowed in Purescript?
 export2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
 export3 ::= MODULEID modid
+export4 ::= slash_slash_parens
 
 
 impdecls ::= (impdecl onl)*
 impdecl ::= IMPORTID modid impspec*
 // FIXME - Not sure line breaks supported in Purescript
 impspec ::= LEFT_PAREN onl import (onl COMMA? onl import onl)* onl COMMA? onl RIGHT_PAREN
-import ::= import1   // | import2
+import ::= import1 | import2
 import1 ::= var
 import2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl cname)*)? onl RIGHT_PAREN)?
 
@@ -102,8 +111,13 @@ datadecl ::= DATAID simpletype onl EQUAL onl constrs
 newtypedecl ::= NEWTYPEID simpletype EQUAL newtypeconstr
 
 decls ::= decl+
-decl ::= gendecl | funlhs EQUAL funrhs
-gendecl ::= typesigdecl
+decl ::= gendecl | funlhs funrhs
+gendecl ::= typesigdecl | fixity INTEGER? ops
+fixity ::= INFIXL | INFIXR | INFIX
+ops ::= op
+op ::= varop  // TODO | conop
+varop ::= VARSYM
+
 
 
 
@@ -118,7 +132,7 @@ simpleclass ::= qcon qvar+   //FIXME qcon+ in plugin
 cdecls ::= (cdecl onl)+
 cdecl ::= typesigdecl   // FIXME gendecl in Report, includes fixity, cdecl includes function def
 context ::= LEFT_PAREN clazz (COMMA clazz)* RIGHT_PAREN
-clazz ::= qcon vars+   // like plugin
+clazz ::= qcon vars+ | qcon LEFT_PAREN tyvar atype+ RIGHT_PAREN
 
 // FIXME - for syntax coloring, will need to split off the name
 typesigdecl ::= var COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
@@ -134,17 +148,24 @@ simpletype ::= qcon? type | qcon (var)*
 instancedecl ::= INSTANCEID typesigdecl (WHEREID idecls)?
 
 idecls ::= idecl+
-idecl ::= funlhs EQUAL onl funrhs
+idecl ::= funlhs funrhs
 
 // 4.4.3
 funlhs ::= funid apat? (apat)*
 funid ::= var   // Pulled out for syntax coloring
 
 
-funrhs ::= exp
+funrhs ::= EQUAL onl exp onl (WHEREID onl decls)* | gdrhs (WHEREID decls)*
+gdrhs ::= guards EQUAL exp onl gdrhs?
+guards ::= VERTICAL_BAR guard (COMMA guard)*
+guard ::= pat LEFT_ARROW infixexp | LETID decls | infixexp
+
+
+
 exp ::= infixexp COLON_COLON type | infixexp
-infixexp ::= lexp qop infixexp | lexp  // Order matters!!
-lexp ::= letexp | ifexp | caseexp | doexp | fexp
+infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
+lexp ::= lambdaexp | letexp | ifexp | caseexp | doexp | fexp
+lambdaexp ::= BACKSLASH apat+ RIGHT_ARROW exp
 letexp ::= onl LETID decls onl INID exp
 ifexp ::= onl IFID exp onl THENID exp onl ELSEID exp
 caseexp ::= onl CASEID exp onl OFID onl alts
@@ -158,8 +179,8 @@ stmts ::= stmt+
 stmt ::= onl pat LEFT_ARROW exp onl | exp// Report has semi-colons req'd
 
 pat ::= lpat
-lpat ::= gcon apat | apat  // Order matters!
-apat ::= var | gcon | qcon | literal  | UNDERSCORE
+lpat ::= gcon apat+ | apat  // Order matters!
+apat ::= var (ATSYM apat)* | gcon | qcon | literal | UNDERSCORE | LEFT_PAREN pat RIGHT_PAREN
 
 gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
 
@@ -213,7 +234,9 @@ qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN
 con ::= CONID    // Constructors  TODO - add consym
 qcon ::= qconid | CONID
 
-qop ::= qvarsym
+// FIXME double left arrow is same as less-than-equal-to
+// FIXME minus being hit before VARSYM
+qop ::= qvarsym | MINUS | DOUBLE_LEFT_ARROW
 
 //qvar_op ::= VARSYM  // TODO - not in Report
 
@@ -235,6 +258,7 @@ qvarsym ::= (modid DOT)* VARSYM
 
 // Not in Report
 dot_dot_parens ::= LEFT_PAREN DOT DOT RIGHT_PAREN
+slash_slash_parens ::= LEFT_PAREN BACKSLASH BACKSLASH RIGHT_PAREN
 private onl ::= NEWLINE*
 
 
