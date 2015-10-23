@@ -44,6 +44,7 @@ VARID = "regexp:[a-z]{1}[A-Za-z_0-9']*" // Starts with lowercase
 
 NEWLINE ="regexp:\n|\r|\r\n"
 IMPORTID = "regexp:import[ ]+"  // TODO - Change all tokens with suffix?
+FOREIGNID = "regexp:foreign import[ ]+"
 TYPEID = "regexp:type[ ]+"
 COLON_COLON = "regexp:::[ ]+"
 DATAID = "regexp:data[ ]+"
@@ -106,13 +107,15 @@ import2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl 
 
 
 topdecls ::= (topdecl onl)*
-topdecl ::= typedecl | datadecl | newtypedecl | classdecl | instancedecl | decls
+topdecl ::= typedecl | datadecl | newtypedecl | classdecl | instancedecl | decls | forimpdecl
 
 typedecl ::= TYPEID simpletype EQUAL (type | rec_constr)
 
 datadecl ::= DATAID simpletype onl EQUAL onl constrs
 
 newtypedecl ::= NEWTYPEID simpletype EQUAL newtypeconstr
+
+forimpdecl ::= FOREIGNID decl
 
 decls ::= decl+
 decl ::= gendecl | funlhs funrhs
