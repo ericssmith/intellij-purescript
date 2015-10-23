@@ -199,7 +199,7 @@ gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
 fexp ::= (fexp)* aexp+
 // FIXME - this is deviating from Report
 // FIXME the record initialization is dubious
-aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | DOLLAR exp | lambdaexp | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
+aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | onl LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | DOLLAR exp | lambdaexp | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
 
 
 literal ::= INTEGER | DECIMAL | STRING
