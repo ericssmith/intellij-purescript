@@ -68,11 +68,13 @@ INFIXL = "regexp:infixl[ ]+"
 INFIXR = "regexp:infixr[ ]+"
 MINUS = "-"
 ATSYM = "@"
+QUALIFIEDID = "regexp:qualified[ ]+"
+//ASID = "regexp:as[ ]+"   // FIXME - this may cause conflicts with var names
+DOLLAR = "regexp:$[ ]+"
 
 UNDERSCORE = "_"  // This is reserved in the Report
 BACKSLASH = "regexp:\\"
 VARSYM = "regexp:[=><+@\|~!#$%\-\*\?\^\.:]+" // List from plugin
-
 
 
 ]
@@ -93,7 +95,8 @@ export4 ::= slash_slash_parens
 
 
 impdecls ::= (impdecl onl)*
-impdecl ::= IMPORTID modid impspec*
+// FIXME - 'as' is not reserved
+impdecl ::= IMPORTID QUALIFIEDID? modid ("as" modid)* impspec*
 // FIXME - Not sure line breaks supported in Purescript
 impspec ::= LEFT_PAREN onl import (onl COMMA? onl import onl)* onl COMMA? onl RIGHT_PAREN
 import ::= import1 | import2
@@ -187,9 +190,10 @@ gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
 
 
 // FIXME - this is modelled on btype below to fix infinite recursion
-fexp ::= (fexp)* bexp      //  Report has [fexp] aexp, which recurses endlessly
-bexp ::= aexp+
-aexp ::= qvar DOT qvar | qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET
+fexp ::= (fexp)* aexp+      //  Report has [fexp] aexp, which recurses endlessly
+// bexp ::= aexp+  // FIXME remove this
+// FIXME - this is deviating from Report
+aexp ::= qvar DOT qvar | qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | DOLLAR exp | lambdaexp
 
 
 literal ::= INTEGER | DECIMAL | STRING
@@ -197,10 +201,10 @@ literal ::= INTEGER | DECIMAL | STRING
 
 
 // 4.1.2
-type ::= btype (RIGHT_ARROW onl type)?
-btype ::=  atype+                       // Match plugin, not Report
+type ::= atype+ (RIGHT_ARROW onl type)?
+//btype ::=  atype+                       // Match plugin, not Report
 
-atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN
+atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN | rec_constr
 // FIXME - LEFT_PAREN etc is Purescript only
 tyvar ::= var | LEFT_PAREN var COLON_COLON type (VERTICAL_BAR var)* RIGHT_PAREN
 
@@ -228,8 +232,8 @@ cname ::= var | con
 
 // 3.2 Variables, Constructors, Operators, and Literals
 var ::= VARID | LEFT_PAREN VARSYM RIGHT_PAREN    // Variables
-// FIXME? - this includes non-qualified in Report and intellij-haskell
-qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN
+// FIXME - deviating from Report
+qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN | UNDERSCORE
 
 con ::= CONID    // Constructors  TODO - add consym
 qcon ::= qconid | CONID
