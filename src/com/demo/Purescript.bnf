@@ -70,11 +70,12 @@ MINUS = "-"
 ATSYM = "@"
 QUALIFIEDID = "regexp:qualified[ ]+"
 //ASID = "regexp:as[ ]+"   // FIXME - this may cause conflicts with var names
-DOLLAR = "regexp:$[ ]+"
+DOLLAR = "regexp:[ ]+\$[ ]+"
+BACKTICK = "`"
 
 UNDERSCORE = "_"  // This is reserved in the Report
 BACKSLASH = "regexp:\\"
-VARSYM = "regexp:[=><+@\|~!#$%\-\*\?\^\.:]+" // List from plugin
+VARSYM = "regexp:[/=><+@\|~!#\$%\-\*\?\^\.:&]+" // List from plugin
 
 
 ]
@@ -119,7 +120,7 @@ gendecl ::= typesigdecl | fixity INTEGER? ops
 fixity ::= INFIXL | INFIXR | INFIX
 ops ::= op
 op ::= varop  // TODO | conop
-varop ::= VARSYM
+varop ::= BACKSLASH BACKSLASH | VARSYM | BACKTICK vars BACKTICK
 
 
 
@@ -160,12 +161,12 @@ funid ::= var   // Pulled out for syntax coloring
 
 funrhs ::= EQUAL onl exp onl (WHEREID onl decls)* | gdrhs (WHEREID decls)*
 gdrhs ::= guards EQUAL exp onl gdrhs?
-guards ::= VERTICAL_BAR guard (COMMA guard)*
+guards ::= onl VERTICAL_BAR guard (COMMA guard)*
 guard ::= pat LEFT_ARROW infixexp | LETID decls | infixexp
 
 
 
-exp ::= infixexp COLON_COLON type | infixexp
+exp ::= infixexp COLON_COLON type | infixexp  // FIXME - why not type optional?
 infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
 lexp ::= lambdaexp | letexp | ifexp | caseexp | doexp | fexp
 lambdaexp ::= BACKSLASH apat+ RIGHT_ARROW exp
@@ -176,24 +177,26 @@ doexp ::= DOID onl stmts
 
 
 alts ::= alt+
-alt ::= pat RIGHT_ARROW exp (WHERE decls)* onl
+alt ::= pat RIGHT_ARROW exp (WHEREID decls)* onl | pat gdpat (WHEREID decls)*
+
+gdpat ::= guards RIGHT_ARROW exp
 
 stmts ::= stmt+
 stmt ::= onl pat LEFT_ARROW exp onl | exp// Report has semi-colons req'd
 
 pat ::= lpat
 lpat ::= gcon apat+ | apat  // Order matters!
-apat ::= var (ATSYM apat)* | gcon | qcon | literal | UNDERSCORE | LEFT_PAREN pat RIGHT_PAREN
+apat ::= var (ATSYM apat)* | gcon | qcon | literal | UNDERSCORE | LEFT_PAREN pat RIGHT_PAREN | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
 
 gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
 
 
 
-// FIXME - this is modelled on btype below to fix infinite recursion
-fexp ::= (fexp)* aexp+      //  Report has [fexp] aexp, which recurses endlessly
-// bexp ::= aexp+  // FIXME remove this
+
+fexp ::= (fexp)* aexp+
 // FIXME - this is deviating from Report
-aexp ::= qvar DOT qvar | qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | DOLLAR exp | lambdaexp
+// FIXME the record initialization is dubious
+aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | DOLLAR exp | lambdaexp | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
 
 
 literal ::= INTEGER | DECIMAL | STRING
@@ -225,13 +228,13 @@ rec_constr ::= onl LEFT_BRACE onl (onl fielddecl (onl COMMA onl fielddecl onl)*)
 
 fielddecl ::= vars COLON_COLON type //(type | atype)
 
-//vars ::= var (COMMA var)*      // FIXME - can you really have comma-separated vars?
-vars ::= var
+vars ::= var (COMMA var)*
 
 cname ::= var | con
 
 // 3.2 Variables, Constructors, Operators, and Literals
-var ::= VARID | LEFT_PAREN VARSYM RIGHT_PAREN    // Variables
+var ::= VARID | LEFT_PAREN varsym RIGHT_PAREN    // Variables
+varsym ::= BACKSLASH BACKSLASH | VARSYM
 // FIXME - deviating from Report
 qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN | UNDERSCORE
 
@@ -240,7 +243,8 @@ qcon ::= qconid | CONID
 
 // FIXME double left arrow is same as less-than-equal-to
 // FIXME minus being hit before VARSYM
-qop ::= qvarsym | MINUS | DOUBLE_LEFT_ARROW
+qop ::= qvarop | MINUS | DOUBLE_LEFT_ARROW
+qvarop ::= qvarsym | BACKTICK qvarid BACKTICK
 
 //qvar_op ::= VARSYM  // TODO - not in Report
 
