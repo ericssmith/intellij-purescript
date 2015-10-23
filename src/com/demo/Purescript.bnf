@@ -115,7 +115,7 @@ datadecl ::= DATAID simpletype onl EQUAL onl constrs
 
 newtypedecl ::= NEWTYPEID simpletype EQUAL newtypeconstr
 
-forimpdecl ::= FOREIGNID decl
+forimpdecl ::= FOREIGNID DATAID? decl
 
 decls ::= decl+
 decl ::= gendecl | funlhs funrhs
@@ -141,8 +141,8 @@ cdecl ::= typesigdecl   // FIXME gendecl in Report, includes fixity, cdecl inclu
 context ::= LEFT_PAREN clazz (COMMA clazz)* RIGHT_PAREN
 clazz ::= qcon vars+ | qcon LEFT_PAREN tyvar atype+ RIGHT_PAREN
 
-// FIXME - for syntax coloring, will need to split off the name
-typesigdecl ::= var COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
+typesigdecl ::= typesiglhs COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
+typesiglhs ::= var | con  // split off for syntax color; also Purescript allows constructors
 
 quantifier ::= FORALLID vars+ DOT onl
 
@@ -210,12 +210,12 @@ literal ::= INTEGER | DECIMAL | STRING
 type ::= atype+ (RIGHT_ARROW onl type)?
 //btype ::=  atype+                       // Match plugin, not Report
 
-atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN | rec_constr
+atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN | rec_constr | varop
 // FIXME - LEFT_PAREN etc is Purescript only
 tyvar ::= var | LEFT_PAREN var COLON_COLON type (VERTICAL_BAR var)* RIGHT_PAREN
 
 // FIXME - qcon (plugin) vs qtycon (Report). Needed for type annotations
-gtycon ::= qcon
+gtycon ::= qcon | LEFT_PAREN RIGHT_PAREN
 
 // FIXME does this allow programs that won't actually compile?
 // ie field labels mixed with normal constructors?
