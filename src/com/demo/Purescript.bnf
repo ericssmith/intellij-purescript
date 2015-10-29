@@ -107,9 +107,9 @@ import2 ::= qcon onl (dot_dot_parens | LEFT_PAREN onl (cname onl (onl COMMA onl 
 
 
 topdecls ::= (topdecl onl)*
-topdecl ::= typedecl | datadecl | newtypedecl | classdecl | instancedecl | decls | forimpdecl
+topdecl ::= typedecl | datadecl | newtypedecl | classdecl | instancedecl | decl | forimpdecl
 
-typedecl ::= TYPEID simpletype EQUAL (type | rec_constr)
+typedecl ::= TYPEID simpletype EQUAL quantifier? (type | rec_constr)
 
 datadecl ::= DATAID simpletype onl EQUAL onl constrs
 
@@ -138,8 +138,9 @@ scontext ::= simpleclass | LEFT_PAREN simpleclass (COMMA simpleclass)* RIGHT_PAR
 simpleclass ::= qcon qvar+   //FIXME qcon+ in plugin
 cdecls ::= (cdecl onl)+
 cdecl ::= typesigdecl   // FIXME gendecl in Report, includes fixity, cdecl includes function def
-context ::= LEFT_PAREN clazz (COMMA clazz)* RIGHT_PAREN
-clazz ::= qcon vars+ | qcon LEFT_PAREN tyvar atype+ RIGHT_PAREN
+context ::= clazz | LEFT_PAREN clazz (COMMA clazz)* RIGHT_PAREN
+//clazz ::= qcon vars+ | qcon LEFT_PAREN tyvar atype* RIGHT_PAREN vars*   // FIXME - why tyvar here?
+clazz ::= qtycls tyvar+ | qtycls LEFT_PAREN tyvar atype* RIGHT_PAREN vars*   // FIXME - why tyvar here?
 
 typesigdecl ::= typesiglhs COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
 typesiglhs ::= var | con  // split off for syntax color; also Purescript allows constructors
@@ -169,7 +170,7 @@ guard ::= pat LEFT_ARROW infixexp | LETID decls | infixexp
 
 
 
-exp ::= infixexp COLON_COLON type | infixexp  // FIXME - why not type optional?
+exp ::=  infixexp COLON_COLON type | infixexp   // FIXME - why not type optional?
 infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
 lexp ::= lambdaexp | letexp | ifexp | caseexp | doexp | fexp
 lambdaexp ::= BACKSLASH apat+ RIGHT_ARROW exp
@@ -178,14 +179,14 @@ ifexp ::= onl IFID exp onl THENID exp onl ELSEID exp
 caseexp ::= onl CASEID exp onl OFID onl alts
 doexp ::= DOID onl stmts
 
-
 alts ::= alt+
-alt ::= pat RIGHT_ARROW exp (WHEREID decls)* onl | pat gdpat (WHEREID decls)*
+alt ::= pat RIGHT_ARROW exp (WHEREID decls)* NEWLINE | pat gdpat (WHEREID decls)*
+
 
 gdpat ::= guards RIGHT_ARROW exp
 
 stmts ::= stmt+
-stmt ::= onl pat LEFT_ARROW exp onl | exp// Report has semi-colons req'd
+stmt ::= onl pat LEFT_ARROW exp | exp    // Report has semi-colons req'd
 
 pat ::= lpat
 lpat ::= gcon apat+ | apat  // Order matters!
@@ -208,11 +209,9 @@ literal ::= INTEGER | DECIMAL | STRING
 
 // 4.1.2
 type ::= atype+ (RIGHT_ARROW onl type)?
-//btype ::=  atype+                       // Match plugin, not Report
+//btype ::=  atype+   //REMOVE                    // Match plugin, not Report
 
 atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN | rec_constr | varop
-// FIXME - LEFT_PAREN etc is Purescript only
-tyvar ::= var | LEFT_PAREN var COLON_COLON type (VERTICAL_BAR var)* RIGHT_PAREN
 
 // FIXME - qcon (plugin) vs qtycon (Report). Needed for type annotations
 gtycon ::= qcon | LEFT_PAREN RIGHT_PAREN
@@ -258,6 +257,12 @@ qvarop ::= qvarsym | BACKTICK qvarid BACKTICK
 //modid ::= (CONID DOT)+ CONID | CONID  // FIXME make it match Report, ie synonym
 modid ::= (CONID DOT)* CONID | CONID  // FIXME make it match Report, ie synonym
 
+
+// Type variable can be annotated in Purescript
+tyvar ::= var | LEFT_PAREN var COLON_COLON type (VERTICAL_BAR var)* RIGHT_PAREN
+
+tycls ::= CONID
+
 // FIXME optional qualification here confuses its use, above. That is,
 // hit several ways
 qvarid ::= (modid DOT)* VARID
@@ -265,14 +270,13 @@ qconid ::= (CONID DOT)+ CONID  // TODO intellij-haskell is different than Report
 
 qtycon ::= (modid DOT)* CONID
 qvarsym ::= (modid DOT)* VARSYM
+qtycls ::= (modid DOT)* tycls
 
 
 // Not in Report
 dot_dot_parens ::= LEFT_PAREN DOT DOT RIGHT_PAREN
 slash_slash_parens ::= LEFT_PAREN BACKSLASH BACKSLASH RIGHT_PAREN
 private onl ::= NEWLINE*
-
-
 
 
 //module_declaration ::= MODULE mod_id WHERE onl body
