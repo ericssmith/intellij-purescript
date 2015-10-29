@@ -186,7 +186,7 @@ alt ::= pat RIGHT_ARROW exp (WHEREID decls)* NEWLINE | pat gdpat (WHEREID decls)
 gdpat ::= guards RIGHT_ARROW exp
 
 stmts ::= stmt+
-stmt ::= onl pat LEFT_ARROW exp | exp    // Report has semi-colons req'd
+stmt ::= onl pat LEFT_ARROW exp NEWLINE | exp   // Report has semi-colons req'd
 
 pat ::= lpat
 lpat ::= gcon apat+ | apat  // Order matters!
