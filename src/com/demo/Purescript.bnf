@@ -123,7 +123,7 @@ gendecl ::= typesigdecl | fixity INTEGER? ops
 fixity ::= INFIXL | INFIXR | INFIX
 ops ::= op
 op ::= varop  // TODO | conop
-varop ::= BACKSLASH BACKSLASH | VARSYM | BACKTICK vars BACKTICK
+varop ::= BACKSLASH BACKSLASH | MINUS | DOUBLE_LEFT_ARROW | VARSYM | BACKTICK vars BACKTICK
 
 
 
@@ -153,7 +153,7 @@ simpletype ::= qcon? type | qcon (var)*
 // Unlike Haskell, Purescript instances are "named to aid the readability of the
 // generated Javascript"
 // FIXME - this is not at all like plugin or Report
-instancedecl ::= INSTANCEID typesigdecl (WHEREID idecls)?
+instancedecl ::= INSTANCEID typesigdecl (WHEREID idecls*)?
 
 idecls ::= idecl+
 idecl ::= funlhs funrhs
@@ -180,7 +180,7 @@ caseexp ::= onl CASEID exp onl OFID onl alts
 doexp ::= DOID onl stmts
 
 alts ::= alt+
-alt ::= pat RIGHT_ARROW exp (WHEREID decls)* NEWLINE | pat gdpat (WHEREID decls)*
+alt ::= pat RIGHT_ARROW exp onl (WHEREID decls)* | pat gdpat (WHEREID decls)*
 
 
 gdpat ::= guards RIGHT_ARROW exp
@@ -198,7 +198,7 @@ gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
 fexp ::= (fexp)* aexp+
 // FIXME - this is deviating from Report
 // FIXME the record initialization is dubious
-aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | onl LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | lambdaexp | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
+aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | onl LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | lambdaexp | LEFT_BRACE exp* (COMMA exp)* RIGHT_BRACE
 
 
 literal ::= INTEGER | DECIMAL | STRING
@@ -212,7 +212,7 @@ type ::= atype+ (RIGHT_ARROW onl type)?
 atype ::= gtycon | tyvar | LEFT_PAREN type RIGHT_PAREN | rec_constr | varop
 
 // FIXME - qcon (plugin) vs qtycon (Report). Needed for type annotations
-gtycon ::= qcon | LEFT_PAREN RIGHT_PAREN
+gtycon ::= qcon | LEFT_PAREN RIGHT_PAREN | LEFT_PAREN RIGHT_ARROW RIGHT_PAREN
 
 // FIXME does this allow programs that won't actually compile?
 // ie field labels mixed with normal constructors?
@@ -234,7 +234,7 @@ cname ::= var | con
 
 // 3.2 Variables, Constructors, Operators, and Literals
 var ::= VARID | LEFT_PAREN varsym RIGHT_PAREN    // Variables
-varsym ::= BACKSLASH BACKSLASH | VARSYM
+varsym ::= BACKSLASH BACKSLASH | MINUS | DOUBLE_LEFT_ARROW | VARSYM
 // FIXME - deviating from Report
 qvar ::= qvarid | LEFT_PAREN qvarsym RIGHT_PAREN | UNDERSCORE
 
@@ -267,7 +267,7 @@ qvarid ::= (modid DOT)* VARID
 qconid ::= (CONID DOT)+ CONID  // TODO intellij-haskell is different than Report
 
 qtycon ::= (modid DOT)* CONID
-qvarsym ::= (modid DOT)* VARSYM
+qvarsym ::= (modid DOT)* (VARSYM | MINUS | DOUBLE_LEFT_ARROW)
 qtycls ::= (modid DOT)* tycls
 
 
