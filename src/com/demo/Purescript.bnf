@@ -42,6 +42,7 @@ RIGHT_BRACKET = "]"
 COMMA = ","
 VARID = "regexp:[a-z]{1}[A-Za-z_0-9']*" // Starts with lowercase
 
+
 NEWLINE ="regexp:\n|\r|\r\n"
 IMPORTID = "regexp:import[ ]+"  // TODO - Change all tokens with suffix?
 FOREIGNID = "regexp:foreign import[ ]+"
@@ -71,7 +72,6 @@ MINUS = "-"
 ATSYM = "@"
 QUALIFIEDID = "regexp:qualified[ ]+"
 //ASID = "regexp:as[ ]+"   // FIXME - this may cause conflicts with var names
-DOLLAR = "regexp:[ ]+\$[ ]+"
 BACKTICK = "`"
 
 UNDERSCORE = "_"  // This is reserved in the Report
@@ -142,7 +142,7 @@ context ::= clazz | LEFT_PAREN clazz (COMMA clazz)* RIGHT_PAREN
 //clazz ::= qcon vars+ | qcon LEFT_PAREN tyvar atype* RIGHT_PAREN vars*   // FIXME - why tyvar here?
 clazz ::= qtycls tyvar+ | qtycls LEFT_PAREN tyvar atype* RIGHT_PAREN vars*   // FIXME - why tyvar here?
 
-typesigdecl ::= typesiglhs COLON_COLON quantifier? (context DOUBLE_RIGHT_ARROW)* type
+typesigdecl ::= typesiglhs COLON_COLON quantifier? (context onl DOUBLE_RIGHT_ARROW)* type
 typesiglhs ::= var | con  // split off for syntax color; also Purescript allows constructors
 
 quantifier ::= FORALLID vars+ DOT onl
@@ -186,7 +186,7 @@ alt ::= pat RIGHT_ARROW exp (WHEREID decls)* NEWLINE | pat gdpat (WHEREID decls)
 gdpat ::= guards RIGHT_ARROW exp
 
 stmts ::= stmt+
-stmt ::= onl pat LEFT_ARROW exp NEWLINE | exp   // Report has semi-colons req'd
+stmt ::= onl pat LEFT_ARROW exp NEWLINE | exp  // Report has semi-colons req'd
 
 pat ::= lpat
 lpat ::= gcon apat+ | apat  // Order matters!
@@ -195,12 +195,10 @@ apat ::= var (ATSYM apat)* | gcon | qcon | literal | UNDERSCORE | LEFT_PAREN pat
 gcon ::= LEFT_BRACKET RIGHT_BRACKET | qcon
 
 
-
-
 fexp ::= (fexp)* aexp+
 // FIXME - this is deviating from Report
 // FIXME the record initialization is dubious
-aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | onl LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | DOLLAR exp | lambdaexp | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
+aexp ::=  qvar DOT qvar | qvar | gcon | qcon | literal | onl LEFT_PAREN exp RIGHT_PAREN | LEFT_BRACKET exp RIGHT_BRACKET | LEFT_PAREN infixexp qop RIGHT_PAREN | LEFT_PAREN qop infixexp RIGHT_PAREN | lambdaexp | LEFT_BRACE exp (COMMA exp)* RIGHT_BRACE
 
 
 literal ::= INTEGER | DECIMAL | STRING
