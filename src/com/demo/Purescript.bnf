@@ -272,6 +272,8 @@ dot_dot_parens ::= LEFT_PAREN DOT DOT RIGHT_PAREN
 slash_slash_parens ::= LEFT_PAREN BACKSLASH BACKSLASH RIGHT_PAREN
 private onl ::= NEWLINE*
 
+comments ::= COMMENT | NCOMMENT | NCOMMENT_START | NCOMMENT_END
+
 
 //module_declaration ::= MODULE mod_id WHERE onl body
 //
