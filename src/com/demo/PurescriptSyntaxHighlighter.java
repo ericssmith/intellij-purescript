@@ -1,7 +1,6 @@
 package com.demo;
 
 
-import com.demo.psi.PurescriptTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;

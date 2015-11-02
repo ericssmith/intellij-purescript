@@ -29,7 +29,7 @@ public class PurescriptParserDefinition implements ParserDefinition {
             PurescriptTypes.PS_VERTICAL_BAR);
 
 
-    public static final TokenSet STRINGS = TokenSet.create(PurescriptTypes.PS_STRING_LITERAL, PurescriptTypes.PS_VALUE);
+    public static final TokenSet STRINGS = TokenSet.create(PurescriptTypes.PS_STRING, PurescriptTypes.PS_VALUE);
 
 
 
