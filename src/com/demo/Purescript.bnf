@@ -167,7 +167,8 @@ guard ::= pat LEFT_ARROW infixexp | LET decls | infixexp
 
 
 exp ::=  infixexp COLON_COLON type | infixexp   // FIXME - why not type optional?
-infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
+//infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
+infixexp ::= fexp VARSYMID fexp | MINUS infixexp | lexp  // FIXME - contradicts Report
 lexp ::= lambdaexp | letexp | ifexp | caseexp | doexp | fexp
 lambdaexp ::= BACKSLASH apat+ RIGHT_ARROW exp
 letexp ::= onl LET decls onl IN exp
@@ -241,7 +242,7 @@ qcon ::= qconid | CONID
 
 // FIXME double left arrow is same as less-than-equal-to
 // FIXME minus being hit before VARSYM
-qop ::= qvarop | MINUS | DOUBLE_LEFT_ARROW
+qop ::= qvarop | VARSYMID | MINUS | DOUBLE_LEFT_ARROW
 qvarop ::= qvarsym | BACKTICK qvarid BACKTICK
 
 //qvar_op ::= VARSYM  // TODO - not in Report
