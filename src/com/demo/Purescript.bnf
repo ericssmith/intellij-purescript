@@ -167,8 +167,7 @@ guard ::= pat LEFT_ARROW infixexp | LET decls | infixexp
 
 
 exp ::=  infixexp COLON_COLON type | infixexp   // FIXME - why not type optional?
-//infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
-infixexp ::= fexp VARSYMID fexp | MINUS infixexp | lexp  // FIXME - contradicts Report
+infixexp ::= lexp qop infixexp | MINUS infixexp | lexp  // Order matters!!
 lexp ::= lambdaexp | letexp | ifexp | caseexp | doexp | fexp
 lambdaexp ::= BACKSLASH apat+ RIGHT_ARROW exp
 letexp ::= onl LET decls onl IN exp
