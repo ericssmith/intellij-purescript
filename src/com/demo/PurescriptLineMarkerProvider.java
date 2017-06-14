@@ -1,13 +1,13 @@
 package com.demo;
 
 
+import com.demo.psi.PurescriptProperty;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
 import com.intellij.codeInsight.navigation.NavigationGutterIconBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLiteralExpression;
-import com.demo.psi.PurescriptProperty;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

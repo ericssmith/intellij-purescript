@@ -1,5 +1,6 @@
 package com.demo;
 
+import com.demo.psi.PurescriptProperty;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiManager;
@@ -8,7 +9,6 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.indexing.FileBasedIndex;
 import com.demo.psi.PurescriptFile;
-import com.demo.psi.PurescriptProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;

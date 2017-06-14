@@ -1,6 +1,10 @@
 # intellij-purescript
 Purescript plugin
 
+UPDATE 2017-06-15
+I was never able to complete this, so it doesn't work. I may get back to it
+someday. 
+
 ## Development
 
 This is developed under IntellijIDEA 14

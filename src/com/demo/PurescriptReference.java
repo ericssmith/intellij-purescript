@@ -1,11 +1,11 @@
 package com.demo;
 
+import com.demo.psi.PurescriptProperty;
 import  com.intellij.codeInsight.lookup.LookupElement ;
 import  com.intellij.codeInsight.lookup.LookupElementBuilder ;
 import  com.intellij.openapi.project.Project ;
 import  com.intellij.openapi.util.TextRange ;
 import  com.intellij.psi.* ;
-import  com.demo.psi.PurescriptProperty ;
 import  org.jetbrains.annotations.NotNull ;
 import  org.jetbrains.annotations.Nullable ;
 
@@ -24,7 +24,7 @@ public  class  PurescriptReference  extends  PsiReferenceBase < PsiElement >  im
     @Override
     public  ResolveResult []  multiResolve ( boolean  incompleteCode )  {
         Project  project  =  myElement . getProject ();
-        final  List < PurescriptProperty >  properties  =  PurescriptUtil . findProperties ( project ,  key );
+        final  List <PurescriptProperty>  properties  =  PurescriptUtil . findProperties ( project ,  key );
         List < ResolveResult >  results  =  new  ArrayList < ResolveResult >();
         for  ( PurescriptProperty  property  :  properties )  {
             results . add ( new  PsiElementResolveResult ( property ));

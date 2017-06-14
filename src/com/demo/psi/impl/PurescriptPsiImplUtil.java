@@ -2,9 +2,9 @@ package com.demo.psi.impl;
 
 
 import com.demo.psi.PurescriptElementFactory;
+import com.demo.psi.PurescriptProperty;
 import com.demo.psi.PurescriptTypes;
 import com.intellij.lang.ASTNode;
-import com.demo.psi.PurescriptProperty;
 import com.intellij.psi.PsiElement;
 
 public class PurescriptPsiImplUtil {
